@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Türk Ceza Kanunu'nda kasten adam öldürme suçu nedir?",
+    "answer": "Kasten adam öldürme suçu, kişinin canlı insan olan başka bir kişiyi kasten öldürmesidir. Türk Ceza Kanunu'nun 81. maddesinde düzenlenmiştir. Cezası ağırlaştırılmış müebbet hapis cezasıdır.",
+    "category": "Ceza Hukuku"
+  },
+  {
+    "question": "Miras paylaşımında eşin hakkı nedir?",
+    "answer": "Evli bir kişinin ölümü halinde eş, diğer mirasçılarla birlikte mirası paylaşır. Türk Medenî Kanunu m.495 ve devamında düzenlenmiştir. Eş'in mirастaki payı, kanunda sayılan diğer mirasçılara göre değişir.",
+    "category": "Miras Hukuku"
+  },
+  {
+    "question": "İş Kanunu'na göre deneme süresi ne kadardır?",
+    "answer": "Deneme süresi en fazla iki aydır. Ancak İş Kanunu'nda belirtilen hallerde bu süre uzatılabilir. Deneme süresi, iş sözleşmesinin kurulmasından itibaren başlar.",
+    "category": "İş Hukuku"
+  },
+  {
+    "question": "Ticari sır nedir ve nasıl korunur?",
+    "answer": "Ticari sır, kimsenin bilmediği ve işletmeci tarafından gizli tutulan üretim, ticari ve benzeri konulardaki özel bilgilerdir. Türk Ticaret Kanunu m. 85 et seq. ile korunur.",
+    "category": "Ticaret Hukuku"
+  },
+  {
+    "question": "Vergi kaçakçılığı suçunun cezası nedir?",
+    "answer": "Vergi kaçakçılığı, cezalandırılabilir bir eylem olup Vergi Usul Kanunu'nda cezalandırılmıştır. Vergisi kaçırılan tutarın %50 ile 300 katı arasında idari para cezası uygulanır.",
+    "category": "Vergi Hukuku"
+  }
+]

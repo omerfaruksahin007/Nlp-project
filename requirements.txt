@@ -1,0 +1,12 @@
+pandas
+numpy
+sentence-transformers
+faiss-cpu
+rank-bm25
+transformers
+datasets
+peft
+accelerate
+scikit-learn
+tqdm
+gradio

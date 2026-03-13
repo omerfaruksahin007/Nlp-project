@@ -1,0 +1,27 @@
+[
+  {
+    "instruction": "Türk Anayasası'nda ifade özgürlüğü nasıl tanımlanır?",
+    "input": "İnsanların düşüncelerini açıkça söyleyebilme hakkıyla ilgili soru",
+    "output": "Türk Anayasası Madde 26 uyarınca, herkesin düşünce ve kanaat özgürlüğü hakları vardır. Bu özgürlük, bu fikirlerini sözle, yazı, resim veya başka şekillerde yaymak hakkını da içerir. Ancak bu özgürlük, kanunla sınırlanabilir."
+  },
+  {
+    "instruction": "Müteahhit nedir ve hangi sorumlulukları vardır?",
+    "input": "İnşaat sektöründe yapı inşa etme işini yüklenenlerin yasal durumu",
+    "output": "Müteahhit, şehircilik ve İmara Uygunluk Kanununa göre inşaat işlerini yüklenmiş kimse veya kuruluştur. Müteahhidin temel sorumlulukları arasında, yapı ruhsatına uygun inşaat yapması, iş güvenliğini sağlaması ve zamanında teslim etmesi yer alır."
+  },
+  {
+    "instruction": "Gümrük vergileri neden alınır?",
+    "input": "Uluslararası ticarette vergi konusu olan mallar",
+    "output": "Gümrük vergileri, bir ülkenin sınırlarından geçen mallar üzerinden alınan vergilerdir. Gümrük Kanunu'na göre bu vergiler, iç üretimi korumak, devlet geliri sağlamak ve dış ticaret politikasını yürütmek amacıyla alınır."
+  },
+  {
+    "instruction": "Nafaka hakkı ne zaman ve kimlere tanınır?",
+    "input": "Boşanma ve aile hukuku konusu",
+    "output": "Nafaka hakkı, Türk Medenî Kanunu Madde 161 vd. göre, geçimini sağlayamayan eş ve çocuklara tanınır. Çocuk nafakası, çocuk reşit oluncaya (bazı hallerde 25 yaşına) kadar ödenir. Eş nafakası ise evlilik birliğinin bozulmasının eşin kusurundan kaynaklanmadığı hallerde verilir."
+  },
+  {
+    "instruction": "Patent hakkı kime ait olur?",
+    "input": "Fikri mülkiyet hukuku ve icat konusu",
+    "output": "Patent hakkı, icatçıya (icad edenin kendisine) veya onun yeminli varislerine aittir. İşçi tarafından yapılan icatların hakları istisnai durumlar hariç işçiye ait olup, işveren belirli ücret talebinde bulunabilir."
+  }
+]
