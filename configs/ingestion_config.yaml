@@ -1,0 +1,40 @@
+# Ingestion Pipeline Configuration
+ingestion:
+  # Input data
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  
+  # Processing options
+  normalize_text: true
+  remove_duplicates: true
+  preserve_case: false
+  
+  # Logging
+  log_level: "INFO"
+  
+# Data sources
+sources:
+  huggingface:
+    dataset: "Renicames/turkish-lawchatbot"
+    split: "train"
+    enabled: false
+  
+  kaggle:
+    path: "data/raw/kaggle_turkishlaw"
+    enabled: false
+  
+  local_files:
+    patterns:
+      - "*.csv"
+      - "*.json"
+      - "*.jsonl"
+    enabled: true
+
+# Output schema
+schema:
+  qa_format: true
+  legal_document_format: true
+  fields_required:
+    - "question"
+    - "answer"
+    - "source"

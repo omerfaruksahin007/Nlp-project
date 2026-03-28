@@ -1,0 +1,55 @@
+# Retrieval Configuration (PROMPT 4 & 5)
+retrieval:
+  # Embedding model (PROMPT 4)
+  embedding_model: "distiluse-base-multilingual-cased-v2"
+  embedding_dim: 384  # distiluse actual dimension
+  batch_size: 32
+  device: "cpu"  # or 'cuda' for GPU
+  normalize_embeddings: true
+  
+  # Dense retrieval (FAISS) - PROMPT 4
+  dense:
+    enabled: true
+    index_type: "flat"  # flat=brute-force (accurate), ivf=clustering (fast)
+    metric: "l2"  # l2=Euclidean (for normalized vectors), cosine=manual
+    top_k: 20  # Retrieve top-20 for reranking
+    # Performance
+    batch_query_size: 32
+    index_dir: "models/retrieval_index"
+    index_file: "models/retrieval_index/dense.index"
+    metadata_file: "models/retrieval_index/dense_metadata.json"
+  
+  # Sparse retrieval (BM25) - PROMPT 5
+  sparse:
+    enabled: true
+    algorithm: "bm25"
+    tokenizer: "turkish"
+    top_k: 20  # Also retrieve top-20 for reranking
+    # BM25 parameters
+    k1: 2.0  # Term frequency saturation
+    b: 0.75  # Document length normalization
+    index_file: "models/retrieval_index/bm25.pkl"
+  
+  # Hybrid fusion - PROMPT 5
+  hybrid:
+    enabled: true
+    method: "rrf"  # rrf=Reciprocal Rank Fusion, weighted=linear combination
+    dense_weight: 0.6
+    sparse_weight: 0.4
+    final_top_k: 10  # Final results after fusion
+  
+  # Reranking - PROMPT 5
+  reranking:
+    enabled: true
+    model: "cross-encoder/ms-marco-multilingual-v1"
+    top_k: 5  # Final top-5 after reranking
+
+# Evaluation on development set
+evaluation:
+  gold_data_path: "data/gold/dev_qa.jsonl"
+  metrics: ["recall@5", "recall@10", "mrr", "ndcg"]
+  
+# Query variations (for multi-query retrieval)
+query_variations:
+  - "original"  # Use original question
+  - "expanded"  # Use question + category context

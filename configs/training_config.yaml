@@ -1,0 +1,68 @@
+# Training Configuration (for embedding fine-tuning)
+training:
+  # Loss function
+  loss_function: "multiple_negatives_ranking_loss"  # or 'triplet', 'contrast'
+  
+  # Learning rate and optimization
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  warmup_steps: 100
+  
+  # Training loops
+  epochs: 3
+  batch_size: 16
+  accumulation_steps: 1
+  
+  # Checkpointing
+  save_steps: 500
+  eval_steps: 500
+  evaluation_strategy: "steps"  # 'steps' or 'epoch'
+  save_total_limit: 3
+  
+  # Device setup
+  use_gpu: true
+  device_ids: [0]  # For multi-GPU training
+  
+  # Logging
+  logging_steps: 50
+  log_level: "info"
+  
+  # Early stopping
+  early_stopping_patience: 3
+  metric_name: "eval_loss"
+  save_best_model: true
+
+# Training data
+data:
+  training_data_path: "data/training/embedding_pairs.jsonl"
+  validation_data_path: "data/gold/dev_qa.jsonl"
+  
+  # Data format
+  pair_format: "sentence1\tsentence2\tlabel"  # or 'triplet', 'qa'
+  positive_label: 1
+  
+  # Data augmentation
+  augmentation_enabled: false
+  augmentation_type: "paraphrase"  # or 'back-translation'
+
+# Model configuration
+model:
+  base_model: "sentence-transformers/distiluse-base-multilingual-cased-v2"
+  model_save_path: "models/embedding_model"
+  
+  # Optional: pooling strategy
+  pooling: "mean"  # 'mean', 'cls', 'max'
+
+# Evaluation
+evaluation:
+  metrics: ["cosine_accuracy", "manhattan_accuracy", "euclidean_accuracy"]
+  batch_size: 128
+  show_progress_bar: true
+
+# Monitoring and wandb (optional)
+wandb:
+  enabled: false
+  project: "turkish-legal-rag"
+  entity: "your-username"
+  notes: "Embedding fine-tuning for Turkish legal retrieval"

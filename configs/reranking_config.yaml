@@ -1,0 +1,39 @@
+# Reranking Configuration
+reranker:
+  # Cross-encoder model
+  model_name: "cross-encoder/ms-marco-multilingual-v1"
+  batch_size: 16
+  
+  # Reranking strategy
+  strategy: "cross-encoder"  # or 'bm25', 'hybrid'
+  top_k_to_rerank: 20
+  top_k_output: 5
+  
+  # Score combination (for hybrid)
+  dense_weight: 0.6
+  sparse_weight: 0.4
+  
+  # Model-specific parameters
+  max_length: 512
+  use_gpu: true
+  
+  # Paths
+  model_dir: "models/reranker"
+  checkpoint_dir: "models/reranker_checkpoints"
+
+# Training configuration for cross-encoder
+training:
+  enabled: false
+  training_data_path: "data/training/reranker_pairs.jsonl"
+  validation_data_path: "data/gold/dev_qa.jsonl"
+  
+  epochs: 3
+  batch_size: 16
+  learning_rate: 2e-5
+  warmup_steps: 100
+  
+  evaluation_steps: 500
+  save_steps: 1000
+  
+  optimizer: "AdamW"
+  loss_function: "multiple_negatives_ranking_loss"

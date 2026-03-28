@@ -1,0 +1,116 @@
+{
+  "timestamp": "2026-03-28T17:43:31.797153",
+  "prompt": 5,
+  "title": "Advanced Retrieval: Sparse (BM25) + Hybrid Fusion",
+  "components": [
+    {
+      "name": "Sparse Retriever (BM25)",
+      "file": "src/retrieval/sparse.py",
+      "status": "✅ PASS",
+      "features": [
+        "Simple tokenizer (whitespace + lowercase)",
+        "BM25Okapi ranking",
+        "Term frequency and IDF scoring",
+        "Document length normalization"
+      ],
+      "methods": [
+        "_simple_tokenizer(text) → List[str]",
+        "build_index(chunks) → bool",
+        "search(query, k=10) → List[SparseSearchResult]",
+        "save_index(output_dir) → bool",
+        "load_index(input_dir) → bool"
+      ]
+    },
+    {
+      "name": "Hybrid Retriever",
+      "file": "src/retrieval/hybrid.py",
+      "status": "✅ PASS",
+      "features": [
+        "Combines dense and sparse results",
+        "Reciprocal Rank Fusion (RRF) scoring",
+        "Configurable weights",
+        "Deduplication of results"
+      ],
+      "methods": [
+        "search(query, k=10) → List[HybridSearchResult]",
+        "_rrf_score(dense_results, sparse_results) → float",
+        "merge_and_rank(dense_results, sparse_results) → List"
+      ]
+    },
+    {
+      "script": "create_sparse_index.py",
+      "status": "✅ PASS"
+    }
+  ],
+  "tests": [
+    {
+      "query": "Ceza hukuku nedir",
+      "results_count": 5,
+      "status": "✅ PASS",
+      "top_score": 13.826987306232438,
+      "results": [
+        {
+          "rank": 1,
+          "score": 13.826987306232438,
+          "text": "Soru : Kanun yararına bozma başvurusu, hangi hukuk dalları ile ilişkilendirilir?"
+        },
+        {
+          "rank": 2,
+          "score": 13.262221792394758,
+          "text": "Soru : Kişiyi hürriyetinden yoksun bırakma suçunun ceza hukuku literatüründeki y"
+        },
+        {
+          "rank": 3,
+          "score": 12.655618337192578,
+          "text": "Soru : Ceza kanunlarını bilmemenin mazeret sayılmamasının sebebi nedir? Cevap : "
+        }
+      ]
+    },
+    {
+      "query": "Hapis cezası minimum ve maksimum süre",
+      "results_count": 5,
+      "status": "✅ PASS",
+      "top_score": 26.365692203147198,
+      "results": [
+        {
+          "rank": 1,
+          "score": 26.365692203147198,
+          "text": "Soru : Süreli hapis cezasının süresi hangi maddede belirlenir? Cevap : Süreli ha"
+        },
+        {
+          "rank": 2,
+          "score": 16.896535060008528,
+          "text": "Soru : Hapis cezası türleri nelerdir? Cevap : Türk Ceza Kanunu ' nda üç tür hapi"
+        },
+        {
+          "rank": 3,
+          "score": 16.785860107473127,
+          "text": "Soru : Suyun akış yönünü değiştiren kişiye verilen hapis cezasının minimum süres"
+        }
+      ]
+    },
+    {
+      "query": "Madde 81 ve 82",
+      "results_count": 5,
+      "status": "✅ PASS",
+      "top_score": 10.092714996803435,
+      "results": [
+        {
+          "rank": 1,
+          "score": 10.092714996803435,
+          "text": "Soru : Hakkın kullanılması ve ilgilinin rızası ile ilgili madde hangi numaralı m"
+        },
+        {
+          "rank": 2,
+          "score": 10.092714996803435,
+          "text": "Soru : Kanun hükmü ve amirin emri ile ilgili madde hangi numaralı maddedir? Ceva"
+        },
+        {
+          "rank": 3,
+          "score": 10.092714996803435,
+          "text": "Soru : Meşru savunma ve zorunluluk hali ile ilgili madde hangi numaralı maddedir"
+        }
+      ]
+    }
+  ]
+}
