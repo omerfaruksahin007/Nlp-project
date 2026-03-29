@@ -146,15 +146,38 @@ class IndexManager:
             Tuple of (index, metadata, config) or (None, None, None) if failed
         """
         try:
-            if not self.index_file.exists():
-                self.logger.warning(f"Index file not found: {self.index_file}")
-                return None, None, None
-            
-            # Load FAISS index using pickle
+            # Check for index file - PRIORITY: faiss.index (new) > dense.index (old)
+            import faiss
             import pickle
-            with open(self.index_file, 'rb') as f:
-                index = pickle.load(f)
-            self.logger.info(f"✅ Index loaded: {self.index_file}")
+            
+            faiss_index_path = self.index_dir / "faiss.index"
+            dense_index_path = self.index_file
+            index_path = None
+            index = None
+            
+            # Try NEW FAISS binary format FIRST (41k+ vectors)
+            if faiss_index_path.exists():
+                try:
+                    index = faiss.read_index(str(faiss_index_path))
+                    index_path = faiss_index_path
+                    self.logger.info(f"✅ Index loaded (FAISS binary): {faiss_index_path}")
+                except Exception as e:
+                    self.logger.warning(f"Failed to load FAISS binary: {e}")
+            
+            # Fallback to OLD pickle format if FAISS failed
+            if index is None and dense_index_path.exists():
+                try:
+                    with open(dense_index_path, 'rb') as f:
+                        index = pickle.load(f)
+                    index_path = dense_index_path
+                    self.logger.info(f"✅ Index loaded (pickle): {dense_index_path}")
+                except Exception as e:
+                    self.logger.warning(f"Failed to load pickle: {e}")
+            
+            # If both failed, error
+            if index is None:
+                self.logger.warning(f"Index files not found: {faiss_index_path} or {dense_index_path}")
+                return None, None, None
             
             # Load metadata
             if self.metadata_file.exists():
@@ -352,13 +375,27 @@ class DenseRetriever:
         self.metadata = metadata
         self.config = config
         
-        # Load chunks from metadata
+        # Load chunks from metadata or chunks_reference.jsonl
         if metadata and 'chunks' in metadata:
             self.chunks = metadata['chunks']
             self.logger.info(f"✅ Loaded {len(self.chunks)} chunks from metadata")
         else:
-            self.logger.warning("No chunks found in metadata")
-            self.chunks = None
+            # Try loading from chunks_reference.jsonl (new format)
+            chunks_ref_file = self.index_manager.index_dir / 'chunks_reference.jsonl'
+            if chunks_ref_file.exists():
+                try:
+                    chunks = []
+                    with open(chunks_ref_file, 'r', encoding='utf-8') as f:
+                        for line in f:
+                            chunks.append(json.loads(line))
+                    self.chunks = chunks
+                    self.logger.info(f"✅ Loaded {len(self.chunks)} chunks from chunks_reference.jsonl")
+                except Exception as e:
+                    self.logger.warning(f"Failed to load chunks_reference.jsonl: {e}")
+                    self.chunks = None
+            else:
+                self.logger.warning("No chunks found in metadata or chunks_reference.jsonl")
+                self.chunks = None
         
         self.logger.info(f"✅ Index loaded. Vectors: {index.ntotal}")
         

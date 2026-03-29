@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-03-29T00:18:04.218248",
+  "total_pairs": 65,
+  "positive_pairs": 50,
+  "hard_negative_pairs": 5,
+  "random_negative_pairs": 10,
+  "pair_types": {
+    "qa_pair": 5,
+    "semantic_related": 45,
+    "hard_negative": 5,
+    "random_negative": 10
+  },
+  "difficulty_stats": {
+    "min": 0.0,
+    "max": 0.7874031066894531,
+    "mean": 0.05779043252651508,
+    "std": 0.17373296440150485,
+    "median": 0.0
+  },
+  "text_length_stats": {
+    "anchor_mean": 29,
+    "positive_mean": 38,
+    "negative_mean": 44
+  }
+}

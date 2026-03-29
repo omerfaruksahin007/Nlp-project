@@ -285,10 +285,14 @@ class HybridRetriever:
         # Build output
         output = []
         for hybrid_rank, (chunk_id, item) in enumerate(sorted_results, 1):
+            # Safety check for None values
+            chunk_text = item.get('chunk_text') or "[No text available]"
+            source_record_id = item.get('source_record_id') or "unknown"
+            
             result = HybridSearchResult(
                 chunk_id=chunk_id,
-                chunk_text=item['chunk_text'],
-                source_record_id=item['source_record_id'],
+                chunk_text=chunk_text,
+                source_record_id=source_record_id,
                 dense_score=item['dense_score'],
                 sparse_score=item['sparse_score'],
                 hybrid_score=item['weighted_score'],

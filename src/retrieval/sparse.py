@@ -169,6 +169,110 @@ class SparseRetriever:
             self.logger.error(f"Failed to build index: {e}", exc_info=True)
             return False
     
+    def load_bm25(self, index_dir: str, dense_metadata_dir: str = None) -> bool:
+        """
+        Load pre-trained BM25 index from disk.
+        
+        Args:
+            index_dir: Directory containing bm25.pkl, tokenized_chunks.json, and metadata
+            dense_metadata_dir: Optional directory containing dense_metadata.json with full chunks
+            
+        Returns:
+            True if successful
+        """
+        try:
+            import pickle
+            
+            index_path = Path(index_dir)
+            
+            # Load BM25 index
+            bm25_file = index_path / "bm25.pkl"
+            if not bm25_file.exists():
+                self.logger.error(f"BM25 index file not found: {bm25_file}")
+                return False
+            
+            self.logger.info(f"Loading BM25 index from {bm25_file}...")
+            with open(bm25_file, 'rb') as f:
+                self.bm25 = pickle.load(f)
+            self.logger.info(f"✅ BM25 index loaded")
+            
+            # Load tokenized chunks
+            tokenized_file = index_path / "tokenized_chunks.json"
+            if tokenized_file.exists():
+                self.logger.info(f"Loading tokenized chunks...")
+                with open(tokenized_file, 'r', encoding='utf-8') as f:
+                    tokenized_data = json.load(f)
+                    # Can be either list of lists or dict with 'chunks' key
+                    if isinstance(tokenized_data, dict):
+                        self.tokenized_chunks = tokenized_data.get('chunks', [])
+                        self.chunks = tokenized_data.get('metadata', [])
+                    else:
+                        self.tokenized_chunks = tokenized_data
+                self.logger.info(f"✅ Loaded {len(self.tokenized_chunks)} tokenized chunks")
+            
+            # Load metadata (optional, for configuration)
+            metadata_file = index_path / "bm25_metadata.json"
+            if metadata_file.exists():
+                with open(metadata_file, 'r', encoding='utf-8') as f:
+                    metadata = json.load(f)
+                    # Update BM25 parameters if available
+                    if 'k1' in metadata:
+                        self.k1 = metadata['k1']
+                    if 'b' in metadata:
+                        self.b = metadata['b']
+                    self.logger.info(f"✅ Loaded metadata (k1={self.k1}, b={self.b})")
+            
+            # Load full chunks from dense metadata if available
+            if dense_metadata_dir:
+                dense_meta_file = Path(dense_metadata_dir) / "dense_metadata.json"
+                if dense_meta_file.exists():
+                    self.logger.info(f"Loading chunks from dense metadata...")
+                    with open(dense_meta_file, 'r', encoding='utf-8') as f:
+                        dense_meta = json.load(f)
+                        self.chunks = dense_meta.get('chunks', [])
+                        self.logger.info(f"✅ Loaded {len(self.chunks)} full chunks from dense metadata")
+            
+            # If chunks still not loaded, try from chunks_reference.jsonl
+            if not self.chunks:
+                # Try in dense metadata directory first, then sparse directory
+                chunks_ref_file = None
+                if dense_metadata_dir:
+                    chunks_ref_file = Path(dense_metadata_dir) / "chunks_reference.jsonl"
+                
+                if not chunks_ref_file or not chunks_ref_file.exists():
+                    chunks_ref_file = index_path / "chunks_reference.jsonl"
+                
+                if chunks_ref_file and chunks_ref_file.exists():
+                    self.logger.info(f"Loading chunks from chunks_reference.jsonl...")
+                    try:
+                        self.chunks = []
+                        with open(chunks_ref_file, 'r', encoding='utf-8') as f:
+                            for line in f:
+                                self.chunks.append(json.loads(line))
+                        self.logger.info(f"✅ Loaded {len(self.chunks)} chunks from chunks_reference.jsonl")
+                    except Exception as e:
+                        self.logger.warning(f"Failed to load chunks_reference.jsonl: {e}")
+                        self.chunks = []
+                
+                # Final fallback: create placeholder from tokenized chunks
+                if not self.chunks:
+                    self.logger.warning("Chunks metadata not found, using placeholder structure")
+                    self.chunks = []
+                    for i in range(len(self.tokenized_chunks)):
+                        self.chunks.append({
+                            'idx': i,
+                            'chunk_id': f'chunk_{i}',
+                            'law_name': 'Unknown',
+                            'article_no': '',
+                        })
+            
+            self.logger.info(f"✅ BM25 retriever ready with {len(self.chunks)} chunks")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to load BM25 index: {e}", exc_info=True)
+            return False
+    
     def search(
         self,
         query: str,
@@ -214,19 +318,24 @@ class SparseRetriever:
                 if score == 0.0:
                     continue
                 
+                # Safety check: verify index is in range
+                if idx < 0 or idx >= len(self.chunks):
+                    self.logger.debug(f"Skipping out-of-range index {idx} (chunks: {len(self.chunks)})")
+                    continue
+                
                 chunk = self.chunks[idx]
                 
                 result = SparseSearchResult(
-                    chunk_id=chunk.get('chunk_id'),
-                    chunk_text=chunk.get('chunk_text'),
-                    source_record_id=chunk.get('source_record_id'),
+                    chunk_id=chunk.get('chunk_id') or f"chunk_{idx}",
+                    chunk_text=chunk.get('chunk_text') or "[No text available]",
+                    source_record_id=chunk.get('source_record_id') or "unknown",
                     score=score,
                     rank=rank,
                     metadata={
-                        'law_name': chunk.get('law_name'),
-                        'article_no': chunk.get('article_no'),
-                        'section': chunk.get('section'),
-                        'source': chunk.get('source'),
+                        'law_name': chunk.get('law_name', ''),
+                        'article_no': chunk.get('article_no', ''),
+                        'section': chunk.get('section', ''),
+                        'source': chunk.get('source', ''),
                     }
                 )
                 
